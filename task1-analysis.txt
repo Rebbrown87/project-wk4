@@ -1,0 +1,22 @@
+📊 Analysis (200 words)
+This task compares AI-powered code completion with manual implementation for sorting a list of dictionaries by a specific key. GitHub Copilot instantly suggested a concise, efficient solution using Python’s built-in sorted() function and a lambda expression. This approach is not only syntactically elegant but also leverages Python’s optimized internal sorting algorithm (Timsort), ensuring high performance and readability.
+
+In contrast, the manual implementation uses an insertion-based approach, iterating through the list and inserting elements in order. While functionally correct, it’s more verbose and less efficient — with a worst-case time complexity of 
+𝑂
+(
+𝑛
+2
+)
+ compared to Copilot’s 
+𝑂
+(
+𝑛
+log
+⁡
+𝑛
+)
+.
+
+The AI-generated code demonstrates how intelligent code completion tools can accelerate development by suggesting idiomatic, performant solutions. It also reduces cognitive load, allowing developers to focus on logic rather than syntax. However, manual implementation remains valuable for educational purposes and understanding algorithmic behavior.
+
+In conclusion, the AI-suggested version is more efficient, readable, and production-ready — making it the preferred choice for real-world applications.
