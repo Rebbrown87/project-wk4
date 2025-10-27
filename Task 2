@@ -1,0 +1,84 @@
+def setup_driver(headless=True):
+    options = Options()
+    if headless:
+        options.add_argument("--headless=new")
+        options.add_argument("--disable-gpu")
+    options.add_argument("--no-sandbox")
+    service = Service(ChromeDriverManager().install())
+    driver = webdriver.Chrome(service=service, options=options)
+    driver.set_window_size(1200, 800)
+    return driver
+
+# Configuration: update these selectors/URL for your target login page
+CONFIG = {
+    "url": "https://the-internet.herokuapp.com/login",
+    "username_selector": (By.ID, "username"),
+    "password_selector": (By.ID, "password"),
+    "submit_selector": (By.CSS_SELECTOR, "button[type='submit']"),
+    # success can be detected either by URL change or by an element/text
+    "success_url_contains": "/secure",
+    "flash_selector": (By.ID, "flash"),
+    "timeout": 8,
+}
+
+def test_login(driver, username, password, config=CONFIG):
+    driver.get(config["url"])
+    WebDriverWait(driver, config["timeout"]).until(
+        EC.presence_of_element_located(config["username_selector"])
+    )
+    driver.find_element(*config["username_selector"]).clear()
+    driver.find_element(*config["username_selector"]).send_keys(username)
+    driver.find_element(*config["password_selector"]).clear()
+    driver.find_element(*config["password_selector"]).send_keys(password)
+    driver.find_element(*config["submit_selector"]).click()
+
+    try:
+        # wait until either the flash appears or URL changes
+        WebDriverWait(driver, config["timeout"]).until(
+            lambda d: config["success_url_contains"] in d.current_url
+            or d.find_element(*config["flash_selector"]).is_displayed()
+        )
+    except Exception:
+        # timeout: treat as failure
+        return False, "timeout"
+
+    # Determine success
+    if config["success_url_contains"] in driver.current_url:
+        return True, "url_match"
+    try:
+        flash = driver.find_element(*config["flash_selector"]).text.lower()
+        if "your username is invalid" in flash or "your password is invalid" in flash or "invalid" in flash:
+            return False, flash.strip()
+        if "you logged into a secure area" in flash or "success" in flash:
+            return True, flash.strip()
+    except Exception:
+        pass
+
+    # fallback: consider URL as determinant
+    return config["success_url_contains"] in driver.current_url, "fallback"
+
+if __name__ == "__main__":
+    # Example credentials: valid and invalid for the demo site
+    tests = [
+        {"username": "tomsmith", "password": "SuperSecretPassword!", "expected": True, "name": "valid_credentials"},
+        {"username": "tomsmith", "password": "incorrect", "expected": False, "name": "invalid_password"},
+    ]
+
+    driver = setup_driver(headless=True)
+    results = []
+    try:
+        for t in tests:
+            success, reason = test_login(driver, t["username"], t["password"])
+            results.append(success)
+            print(f"Test '{t['name']}': expected={t['expected']} actual={success} reason={reason}")
+            # give the page a moment to settle before next test
+            time.sleep(1)
+    finally:
+        driver.quit()
+
+    total = len(results)
+    successes = sum(1 for r in results if r)
+    failures = total - successes
+    success_rate = (successes / total) * 100 if total else 0.0
+
+    print(f"Total: {total}, Successes: {successes}, Failures: {failures}, Success rate: {success_rate:.1f}%")
