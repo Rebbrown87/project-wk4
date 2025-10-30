@@ -1,0 +1,20 @@
+
+In breast cancer data, several types of biases can affect analysis and machine learning modeling. 
+
+### Class Imbalance Bias
+Most breast cancer datasets are imbalanced, with far more benign than malignant cases (e.g., 63% benign, 37% malignant)[1]. This imbalance can lead to models predicting the majority class more often, reducing accuracy for the minority class (malignant tumors)[1].
+
+### Demographical Bias
+Representation in breast cancer datasets is often uneven for demographic groups. Factors like race and gender may be underrepresented, and many datasets focus more on certain populations (e.g., white or affluent patients)[1]. This impacts model fairness and accuracy for minority and underrepresented groups[1].
+
+### Selection Bias
+Patients self-selecting into studies—such as those with a family history—means that studies may not represent the broader population, inducing selection bias and affecting generalizability of findings[2].
+
+### Fairness Tools & Mitigation
+Fairness tools and machine learning methods can help identify and mitigate biases:
+- They systematically analyze datasets and algorithms to detect bias in key attributes, such as race or gender[3].
+- Resampling or re-weighting data, community outreach, and ensuring representation from all groups in data collection can support fairness[3].
+- Many fairness frameworks emphasize involving diverse patients and stakeholders, as well as sufficient representation for unbiased model building[3].
+
+These biases must be addressed for models to be fair, accurate, and generalizable across all patient groups[1][3][2].
+
